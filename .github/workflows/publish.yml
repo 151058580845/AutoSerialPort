@@ -1,0 +1,118 @@
+name: Ci/CD Pipeline
+description: |
+  自动打包成window包，linux包
+on:
+  push:
+    branches:
+      - publish
+  pull_request:
+    branches:
+      - publish
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        include:
+          - os: ubuntu-latest
+            runtime: linux-x64
+            artifact-name: AutoSerialPort-linux-x64
+            executable-extension: ""
+          - os: windows-latest
+            runtime: win-x64
+            artifact-name: AutoSerialPort-windows-x64
+            executable-extension: ".exe"
+    
+    runs-on: ${{ matrix.os }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x' # 根据你的项目调整版本
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --configuration Release --no-restore
+
+      - name: Publish
+        run: |
+          dotnet publish --configuration Release \
+            --runtime ${{ matrix.runtime }} \
+            --self-contained true \
+            --output ./publish/${{ matrix.runtime }} \
+            -p:PublishSingleFile=true \
+            -p:PublishTrimmed=true \
+            -p:TrimMode=link
+
+      - name: Create Archive (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          cd ./publish/${{ matrix.runtime }}
+          tar -czf ../../${{ matrix.artifact-name }}.tar.gz *
+
+      - name: Create Archive (Windows)
+        if: matrix.os == 'windows-latest'
+        run: |
+          cd ./publish/${{ matrix.runtime }}
+          7z a ../../${{ matrix.artifact-name }}.zip *
+
+      - name: Upload Linux Artifact
+        if: matrix.os == 'ubuntu-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact-name }}
+          path: ${{ matrix.artifact-name }}.tar.gz
+
+      - name: Upload Windows Artifact
+        if: matrix.os == 'windows-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact-name }}
+          path: ${{ matrix.artifact-name }}.zip
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/publish'
+    
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ github.run_number }}
+          release_name: Release v${{ github.run_number }}
+          draft: false
+          prerelease: false
+
+      - name: Upload Linux Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./AutoSerialPort-linux-x64/AutoSerialPort-linux-x64.tar.gz
+          asset_name: AutoSerialPort-linux-x64.tar.gz
+          asset_content_type: application/gzip
+
+      - name: Upload Windows Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./AutoSerialPort-windows-x64/AutoSerialPort-windows-x64.zip
+          asset_name: AutoSerialPort-windows-x64.zip
+          asset_content_type: application/zip
