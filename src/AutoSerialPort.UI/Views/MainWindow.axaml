@@ -1,0 +1,709 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:AutoSerialPort.UI.ViewModels"
+        xmlns:models="clr-namespace:AutoSerialPort.Domain.Models;assembly=AutoSerialPort.Domain"
+        xmlns:appModels="clr-namespace:AutoSerialPort.Application.Models;assembly=AutoSerialPort.Application"
+        xmlns:behaviors="clr-namespace:AutoSerialPort.UI.Behaviors"
+        x:Class="AutoSerialPort.UI.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Icon="avares://AutoSerialPort.UI/Assets/icon.png"
+        Width="1300" Height="720"
+        Title="AutoSerialPort"
+        Background="#F1F5F9"
+        FontFamily="Microsoft YaHei UI, Noto Sans CJK SC, PingFang SC, Segoe UI"
+        WindowStartupLocation="CenterScreen">
+  <Window.Resources>
+    <Color x:Key="ConsoleAccent">#0F766E</Color>
+    <Color x:Key="ConsoleAccentSoft">#CCFBF1</Color>
+    <Color x:Key="ConsoleInk">#0F172A</Color>
+    <Color x:Key="ConsoleInkSoft">#475569</Color>
+    <Color x:Key="ConsoleBorder">#E2E8F0</Color>
+    <Color x:Key="ConsoleSurface">#FFFFFF</Color>
+    <Color x:Key="ConsoleSurfaceSoft">#F8FAFC</Color>
+    <Color x:Key="ConsoleWarning">#F59E0B</Color>
+    <Color x:Key="ConsoleDanger">#DC2626</Color>
+
+    <SolidColorBrush x:Key="ConsoleAccentBrush" Color="{StaticResource ConsoleAccent}" />
+    <SolidColorBrush x:Key="ConsoleAccentSoftBrush" Color="{StaticResource ConsoleAccentSoft}" />
+    <SolidColorBrush x:Key="ConsoleInkBrush" Color="{StaticResource ConsoleInk}" />
+    <SolidColorBrush x:Key="ConsoleInkSoftBrush" Color="{StaticResource ConsoleInkSoft}" />
+    <SolidColorBrush x:Key="ConsoleBorderBrush" Color="{StaticResource ConsoleBorder}" />
+    <SolidColorBrush x:Key="ConsoleSurfaceBrush" Color="{StaticResource ConsoleSurface}" />
+    <SolidColorBrush x:Key="ConsoleSurfaceSoftBrush" Color="{StaticResource ConsoleSurfaceSoft}" />
+    <SolidColorBrush x:Key="ConsoleWarningBrush" Color="{StaticResource ConsoleWarning}" />
+    <SolidColorBrush x:Key="ConsoleDangerBrush" Color="{StaticResource ConsoleDanger}" />
+
+    <LinearGradientBrush x:Key="ConsoleHeroBrush" StartPoint="0,0" EndPoint="1,1">
+      <GradientStop Color="#ECFEFF" Offset="0" />
+      <GradientStop Color="#F8FAFC" Offset="0.5" />
+      <GradientStop Color="#EEF2FF" Offset="1" />
+    </LinearGradientBrush>
+  </Window.Resources>
+  <Window.Styles>
+    <Style Selector="Button">
+      <Setter Property="CornerRadius" Value="8" />
+      <Setter Property="Padding" Value="14,6" />
+      <Setter Property="FontWeight" Value="SemiBold" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="Background" Value="#F1F5F9" />
+      <Setter Property="BorderBrush" Value="#CBD5F5" />
+      <Setter Property="Foreground" Value="#0F172A" />
+    </Style>
+    <Style Selector="Button:pointerover">
+      <Setter Property="Background" Value="#E2E8F0" />
+    </Style>
+    <Style Selector="Button.primary">
+      <Setter Property="Background" Value="#2563EB" />
+      <Setter Property="BorderBrush" Value="#1D4ED8" />
+      <Setter Property="Foreground" Value="White" />
+    </Style>
+    <Style Selector="Button.primary:pointerover">
+      <Setter Property="Background" Value="#1D4ED8" />
+    </Style>
+    <Style Selector="Button.primary:pressed">
+      <Setter Property="Background" Value="#1E40AF" />
+    </Style>
+    <Style Selector="Button.success">
+      <Setter Property="Background" Value="#16A34A" />
+      <Setter Property="BorderBrush" Value="#15803D" />
+      <Setter Property="Foreground" Value="White" />
+    </Style>
+    <Style Selector="Button.success:pointerover">
+      <Setter Property="Background" Value="#15803D" />
+    </Style>
+    <Style Selector="Button.success:pressed">
+      <Setter Property="Background" Value="#166534" />
+    </Style>
+    <Style Selector="Button.danger">
+      <Setter Property="Background" Value="#DC2626" />
+      <Setter Property="BorderBrush" Value="#B91C1C" />
+      <Setter Property="Foreground" Value="White" />
+    </Style>
+    <Style Selector="Button.danger:pointerover">
+      <Setter Property="Background" Value="#B91C1C" />
+    </Style>
+    <Style Selector="Button.danger:pressed">
+      <Setter Property="Background" Value="#991B1B" />
+    </Style>
+    <Style Selector="Button.secondary">
+      <Setter Property="Background" Value="#E2E8F0" />
+      <Setter Property="BorderBrush" Value="#CBD5F5" />
+      <Setter Property="Foreground" Value="#1E293B" />
+    </Style>
+    <Style Selector="Button.secondary:pointerover">
+      <Setter Property="Background" Value="#CBD5F5" />
+    </Style>
+    <Style Selector="Button.mini">
+      <Setter Property="Padding" Value="10,4" />
+      <Setter Property="FontSize" Value="12" />
+      <Setter Property="CornerRadius" Value="6" />
+    </Style>
+    <Style Selector="ToggleSwitch.compact">
+      <Setter Property="FontSize" Value="12" />
+    </Style>
+    <Style Selector="Border.console-card">
+      <Setter Property="Background" Value="{StaticResource ConsoleSurfaceBrush}" />
+      <Setter Property="BorderBrush" Value="{StaticResource ConsoleBorderBrush}" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="CornerRadius" Value="12" />
+      <Setter Property="BoxShadow" Value="0 12 28 0 #0F172A1A" />
+    </Style>
+    <Style Selector="Border.console-inset">
+      <Setter Property="Background" Value="{StaticResource ConsoleSurfaceSoftBrush}" />
+      <Setter Property="BorderBrush" Value="{StaticResource ConsoleBorderBrush}" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="CornerRadius" Value="10" />
+    </Style>
+    <Style Selector="TextBox.console-input">
+      <Setter Property="Background" Value="{StaticResource ConsoleSurfaceBrush}" />
+      <Setter Property="BorderBrush" Value="{StaticResource ConsoleBorderBrush}" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="CornerRadius" Value="8" />
+      <Setter Property="Padding" Value="10" />
+    </Style>
+  </Window.Styles>
+  <Grid RowDefinitions="Auto,*,Auto">
+    <Border Grid.Row="0" BorderBrush="#E2E8F0" BorderThickness="0,0,0,1" Padding="16">
+      <Border.Background>
+        <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+          <GradientStop Color="#F8FAFC" Offset="0" />
+          <GradientStop Color="#EEF2FF" Offset="1" />
+        </LinearGradientBrush>
+      </Border.Background>
+      <Grid ColumnDefinitions="Auto,*,Auto" VerticalAlignment="Center">
+        <StackPanel Orientation="Horizontal" Spacing="10">
+          <TextBlock Text="串口采集配置" FontSize="18" FontWeight="SemiBold" />
+          <TextBlock Text="多串口采集与转发" Foreground="#64748B" VerticalAlignment="Center" />
+        </StackPanel>
+        <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8">
+          <Button Content="全部启动" Command="{Binding StartCommand}" Classes="secondary mini" />
+          <Button Content="全部停止" Command="{Binding StopCommand}" Classes="secondary mini" />
+          <Button Content="保存/应用" Command="{Binding ApplyCommand}" Classes="primary" />
+        </StackPanel>
+      </Grid>
+    </Border>
+
+    <Grid Grid.Row="1" ColumnDefinitions="300,*" Margin="16">
+      <Border Grid.Column="0" Background="#FFFFFF" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="8" Padding="12" Margin="0,0,16,0">
+        <StackPanel Spacing="12">
+          <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+            <TextBlock Text="设备列表" FontWeight="SemiBold" FontSize="15" />
+            <Border Background="#E2E8F0" CornerRadius="10" Padding="6,2">
+              <TextBlock Text="{Binding Devices.Count}" FontSize="12" Foreground="#475569" />
+            </Border>
+          </StackPanel>
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <Button Content="添加串口" Command="{Binding AddDeviceCommand}" Classes="secondary" />
+            <Button Content="移除选中" Command="{Binding RemoveDeviceCommand}" Classes="secondary" />
+          </StackPanel>
+          <ScrollViewer>
+            <Grid>
+              <!-- Device List -->
+              <ListBox ItemsSource="{Binding Devices}"
+                       SelectedItem="{Binding SelectedDevice, Mode=TwoWay}"
+                       Background="Transparent"
+                       BorderThickness="0"
+                       IsVisible="{Binding !IsBusy}">
+                <ListBox.ItemTemplate>
+                  <DataTemplate x:DataType="vm:DeviceProfileViewModel">
+                    <Border BorderBrush="#E5E7EB" BorderThickness="1" CornerRadius="8" Padding="10" Margin="0,0,0,10" Background="#FFFFFF">
+                      <StackPanel Spacing="6">
+                        <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                          <TextBlock Text="{Binding SerialSettings.Config.DisplayName}" FontWeight="SemiBold" />
+                          <Border Background="{Binding ConnectionStateColor}" CornerRadius="6" Padding="6,2">
+                            <TextBlock Text="{Binding ConnectionStateText}" Foreground="White" FontSize="12" />
+                          </Border>
+                        </StackPanel>
+                        <TextBlock Text="{Binding IdentifierSummaryText}" Foreground="#475569" FontSize="12" />
+                        <TextBlock Text="{Binding SerialParameterSummaryText}" Foreground="#475569" FontSize="12" />
+                        <TextBlock Text="{Binding PortSummaryText}" Foreground="#475569" FontSize="12" />
+                        <TextBlock Text="{Binding ThroughputText}" Foreground="#475569" FontSize="12" />
+                        <TextBlock Text="{Binding ForwardersText}" Foreground="#475569" FontSize="12" TextWrapping="Wrap" />
+                        <TextBlock Text="{Binding LastErrorText}" Foreground="#DC2626" FontSize="12" TextWrapping="Wrap" IsVisible="{Binding HasLastError}" />
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                          <Button Content="启动" Command="{Binding StartCommand}" Classes="success mini" />
+                          <Button Content="停止" Command="{Binding StopCommand}" Classes="danger mini" />
+                          <ToggleSwitch Classes="compact"
+                                        Content="自动开启"
+                                        IsChecked="{Binding SerialSettings.Config.IsEnabled}" />
+                        </StackPanel>
+                      </StackPanel>
+                    </Border>
+                  </DataTemplate>
+                </ListBox.ItemTemplate>
+              </ListBox>
+
+              <!-- Loading Indicator -->
+              <Border Background="#80FFFFFF" 
+                      CornerRadius="8" 
+                      IsVisible="{Binding IsBusy}"
+                      HorizontalAlignment="Stretch"
+                      VerticalAlignment="Stretch">
+                <Border Background="White" 
+                        BorderBrush="#E2E8F0" 
+                        BorderThickness="1" 
+                        CornerRadius="12" 
+                        Padding="24" 
+                        HorizontalAlignment="Center" 
+                        VerticalAlignment="Center"
+                        BoxShadow="0 4 12 0 #0F172A20">
+                  <StackPanel Spacing="16"  HorizontalAlignment="Center">
+                    <!-- Spinner -->
+                    <ProgressBar IsIndeterminate="True"
+                                 Width="24" Height="24"
+                                 Classes="circular" />
+
+                    <!-- Loading Text -->
+                    <TextBlock Text="{Binding LoadingMessage, FallbackValue='正在加载设备...'}" 
+                               Foreground="#475569" 
+                               FontSize="14" 
+                               FontWeight="Medium"
+                               HorizontalAlignment="Center" />
+
+                    <!-- Progress Bar (for long operations) -->
+                    <ProgressBar IsVisible="{Binding ShowLoadingProgress}"
+                                 Value="{Binding LoadingProgress}"
+                                 Maximum="100"
+                                 Height="4"
+                                 Width="200"
+                                 Background="#F1F5F9"
+                                 Foreground="#2563EB"
+                                 CornerRadius="2" />
+                  </StackPanel>
+                </Border>
+              </Border>
+
+              <!-- Empty State -->
+              <!-- IsVisible="{Binding ShowEmptyState}" -->
+              <Border Background="#F8FAFC" 
+                      BorderBrush="#E2E8F0" 
+                      BorderThickness="1" 
+                      CornerRadius="12" 
+                      Padding="32" 
+                      IsVisible="False"
+                      HorizontalAlignment="Center" 
+                      VerticalAlignment="Center">
+                <StackPanel Spacing="16" HorizontalAlignment="Center">
+                  <!-- Icon -->
+                  <Border Width="48" Height="48" 
+                          Background="#F3F4F6" 
+                          CornerRadius="24" 
+                          HorizontalAlignment="Center">
+                    <TextBlock Text="📋" 
+                               FontSize="24" 
+                               HorizontalAlignment="Center" 
+                               VerticalAlignment="Center" />
+                  </Border>
+
+                  <!-- Title -->
+                  <TextBlock Text="{Binding EmptyStateTitle}" 
+                             Foreground="#374151" 
+                             FontSize="16" 
+                             FontWeight="SemiBold"
+                             HorizontalAlignment="Center" />
+
+                  <!-- Description -->
+                  <TextBlock Text="{Binding EmptyStateDescription}" 
+                             Foreground="#6B7280" 
+                             FontSize="14" 
+                             TextWrapping="Wrap"
+                             HorizontalAlignment="Center"
+                             TextAlignment="Center"
+                             MaxWidth="280" />
+
+                  <!-- Action Button -->
+                  <Button Content="添加第一个设备" 
+                          Command="{Binding AddDeviceCommand}"
+                          Classes="primary"
+                          HorizontalAlignment="Center"
+                          Margin="0,8,0,0" />
+                </StackPanel>
+              </Border>
+            </Grid>
+          </ScrollViewer>
+        </StackPanel>
+      </Border>
+
+      <Border Grid.Column="1" Background="#FFFFFF" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="8" Padding="12">
+        <TabControl>
+          <TabItem Header="串口设置">
+            <ScrollViewer>
+              <StackPanel Margin="8" Spacing="12">
+                <Border Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="6" Padding="12">
+                  <StackPanel Spacing="8">
+                    <TextBlock Text="串口信息" FontWeight="SemiBold" />
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                      <TextBlock Text="端口" Width="90" VerticalAlignment="Center" />
+                      <ComboBox Width="260"
+                                ItemsSource="{Binding SelectedDevice.SerialSettings.Ports}"
+                                SelectedItem="{Binding SelectedDevice.SerialSettings.SelectedPort}">
+                        <ComboBox.ItemTemplate>
+                          <DataTemplate x:DataType="models:SerialPortDescriptor">
+                            <TextBlock Text="{Binding DisplayName}" />
+                          </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                      </ComboBox>
+                      <Button Content="扫描" Command="{Binding SelectedDevice.SerialSettings.RefreshPortsCommand}" Classes="secondary" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                      <TextBlock Text="名称" Width="90" VerticalAlignment="Center" />
+                      <TextBox Width="220" Text="{Binding SelectedDevice.SerialSettings.Config.DisplayName}" />
+                      <ToggleSwitch Classes="compact"
+                                    Content="自动开启"
+                                    IsChecked="{Binding SelectedDevice.SerialSettings.Config.IsEnabled}" />
+                    </StackPanel>
+                    <StackPanel>
+                      <Button Content="设置详情" Command="{Binding SelectedDevice.SerialSettings.ShowAdvancedSettingsCommand}"></Button>
+                    </StackPanel>
+                    <StackPanel IsVisible="{Binding SelectedDevice.SerialSettings.IsShowAdvancedSettings}" Orientation="Horizontal" Spacing="8">
+                      <TextBlock Text="波特率" Width="90" VerticalAlignment="Center" />
+                      <TextBox Width="160" Text="{Binding SelectedDevice.SerialSettings.Config.BaudRate}" />
+                    </StackPanel>
+                    <StackPanel IsVisible="{Binding SelectedDevice.SerialSettings.IsShowAdvancedSettings}" Orientation="Horizontal" Spacing="8">
+                      <TextBlock Text="校验" Width="90" VerticalAlignment="Center" />
+                      <ComboBox Width="160"
+                                ItemsSource="{Binding SelectedDevice.SerialSettings.ParityOptions}"
+                                SelectedItem="{Binding SelectedDevice.SerialSettings.SelectedParityOption}">
+                        <ComboBox.ItemTemplate>
+                          <DataTemplate x:DataType="appModels:OptionItem">
+                            <TextBlock Text="{Binding DisplayName}" />
+                          </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                      </ComboBox>
+                    </StackPanel>
+                    <StackPanel IsVisible="{Binding SelectedDevice.SerialSettings.IsShowAdvancedSettings}" Orientation="Horizontal" Spacing="8">
+                      <TextBlock Text="数据位" Width="90" VerticalAlignment="Center" />
+                      <TextBox Width="160" Text="{Binding SelectedDevice.SerialSettings.Config.DataBits}" />
+                    </StackPanel>
+                    <StackPanel IsVisible="{Binding SelectedDevice.SerialSettings.IsShowAdvancedSettings}" Orientation="Horizontal" Spacing="8">
+                      <TextBlock Text="停止位" Width="90" VerticalAlignment="Center" />
+                      <ComboBox Width="160"
+                                ItemsSource="{Binding SelectedDevice.SerialSettings.StopBitsOptions}"
+                                SelectedItem="{Binding SelectedDevice.SerialSettings.SelectedStopBitsOption}">
+                        <ComboBox.ItemTemplate>
+                          <DataTemplate x:DataType="appModels:OptionItem">
+                            <TextBlock Text="{Binding DisplayName}" />
+                          </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                      </ComboBox>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                      <TextBlock Text="识别类型" Width="90" VerticalAlignment="Center" />
+                      <ComboBox Width="200"
+                                ItemsSource="{Binding SelectedDevice.SerialSettings.IdentifierTypeOptions}"
+                                SelectedItem="{Binding SelectedDevice.SerialSettings.SelectedIdentifierTypeOption}">
+                        <ComboBox.ItemTemplate>
+                          <DataTemplate x:DataType="appModels:OptionItem">
+                            <TextBlock Text="{Binding DisplayName}" />
+                          </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                      </ComboBox>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                      <TextBlock Text="识别值" Width="90" VerticalAlignment="Center" />
+                      <TextBox Width="420" Text="{Binding SelectedDevice.SerialSettings.Config.IdentifierValue}" />
+                    </StackPanel>
+                  </StackPanel>
+                </Border>
+              </StackPanel>
+            </ScrollViewer>
+          </TabItem>
+
+          <TabItem Header="解析设置">
+            <ScrollViewer>
+              <StackPanel Margin="8" Spacing="12">
+                <Border Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="6" Padding="12">
+                  <StackPanel Spacing="8">
+                    <TextBlock Text="拆包设置" FontWeight="SemiBold" />
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                      <TextBlock Text="方式" Width="90" VerticalAlignment="Center" />
+                      <ComboBox Width="220"
+                                ItemsSource="{Binding SelectedDevice.ParserSettings.FrameDecoderTypeOptions}"
+                                SelectedItem="{Binding SelectedDevice.ParserSettings.SelectedFrameDecoderOption}">
+                        <ComboBox.ItemTemplate>
+                          <DataTemplate x:DataType="appModels:OptionItem">
+                            <TextBlock Text="{Binding DisplayName}" />
+                          </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                      </ComboBox>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Spacing="8" IsVisible="{Binding SelectedDevice.ParserSettings.IsDelimiterFrameDecoder}">
+                      <TextBlock Text="编码" Width="90" VerticalAlignment="Center" />
+                      <TextBox Width="200" Text="{Binding SelectedDevice.ParserSettings.FrameEncoding}" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Spacing="8" IsVisible="{Binding SelectedDevice.ParserSettings.IsDelimiterFrameDecoder}">
+                      <TextBlock Text="分隔符" Width="90" VerticalAlignment="Center" />
+                      <TextBox Width="200" Text="{Binding SelectedDevice.ParserSettings.FrameDelimiter}" />
+                      <CheckBox Content="包含分隔符" IsChecked="{Binding SelectedDevice.ParserSettings.FrameIncludeDelimiter}" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Spacing="8" IsVisible="{Binding SelectedDevice.ParserSettings.IsHeaderFooterFrameDecoder}">
+                      <TextBlock Text="帧头" Width="90" VerticalAlignment="Center" />
+                      <TextBox Width="200" Text="{Binding SelectedDevice.ParserSettings.FrameHeader}" />
+                      <TextBlock Text="帧尾" VerticalAlignment="Center" />
+                      <TextBox Width="200" Text="{Binding SelectedDevice.ParserSettings.FrameFooter}" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Spacing="8" IsVisible="{Binding SelectedDevice.ParserSettings.IsHeaderFooterFrameDecoder}">
+                      <CheckBox Content="保留帧头帧尾" IsChecked="{Binding SelectedDevice.ParserSettings.FrameIncludeHeaderFooter}" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Spacing="8" IsVisible="{Binding SelectedDevice.ParserSettings.IsFixedLengthFrameDecoder}">
+                      <TextBlock Text="固定长度" Width="90" VerticalAlignment="Center" />
+                      <TextBox Width="160" Text="{Binding SelectedDevice.ParserSettings.FrameLength}" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Spacing="8" IsVisible="{Binding SelectedDevice.ParserSettings.ShowFrameDecoderSettings}">
+                      <TextBlock Text="缓存上限" Width="90" VerticalAlignment="Center" />
+                      <TextBox Width="160" Text="{Binding SelectedDevice.ParserSettings.FrameMaxBufferLength}" />
+                    </StackPanel>
+                  </StackPanel>
+                </Border>
+                <Border Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="6" Padding="12">
+                  <StackPanel Spacing="8">
+                    <TextBlock Text="解析规则" FontWeight="SemiBold" />
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                      <TextBlock Text="规则" Width="90" VerticalAlignment="Center" />
+                      <ComboBox Width="220"
+                                ItemsSource="{Binding SelectedDevice.ParserSettings.ParserTypeOptions}"
+                                SelectedItem="{Binding SelectedDevice.ParserSettings.SelectedParserOption}">
+                        <ComboBox.ItemTemplate>
+                          <DataTemplate x:DataType="appModels:OptionItem">
+                            <TextBlock Text="{Binding DisplayName}" />
+                          </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                      </ComboBox>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                      <TextBlock Text="编码" Width="90" VerticalAlignment="Center" />
+                      <TextBox Width="200" Text="{Binding SelectedDevice.ParserSettings.Encoding}" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Spacing="8" IsVisible="{Binding SelectedDevice.ParserSettings.IsLineParser}">
+                      <TextBlock Text="分隔符" Width="90" VerticalAlignment="Center" />
+                      <TextBox Width="200" Text="{Binding SelectedDevice.ParserSettings.Separator}" />
+                      <TextBlock Text="例如 \\n" VerticalAlignment="Center" Foreground="#6B7280" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Spacing="8" IsVisible="{Binding SelectedDevice.ParserSettings.IsJsonFieldParser}">
+                      <TextBlock Text="分隔符" Width="90" VerticalAlignment="Center" />
+                      <TextBox Width="200" Text="{Binding SelectedDevice.ParserSettings.Separator}" />
+                      <TextBlock Text="例如 \\n" VerticalAlignment="Center" Foreground="#6B7280" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Spacing="8" IsVisible="{Binding SelectedDevice.ParserSettings.IsJsonFieldParser}">
+                      <TextBlock Text="字段路径" Width="90" VerticalAlignment="Center" />
+                      <TextBox Width="200" Text="{Binding SelectedDevice.ParserSettings.JsonFieldPath}" />
+                      <TextBlock Text="例如 data 或 data.value" VerticalAlignment="Center" Foreground="#6B7280" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Spacing="8" IsVisible="{Binding SelectedDevice.ParserSettings.IsJsonFieldParser}">
+                      <CheckBox Content="宽松 JSON" IsChecked="{Binding SelectedDevice.ParserSettings.JsonAllowLoose}" />
+                      <TextBlock Text="支持 {data:123} 这种格式" VerticalAlignment="Center" Foreground="#6B7280" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Spacing="8" IsVisible="{Binding SelectedDevice.ParserSettings.IsScaleParser}">
+                      <CheckBox Content="去除首尾空白" IsChecked="{Binding SelectedDevice.ParserSettings.TrimWhitespace}" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Spacing="8" IsVisible="{Binding SelectedDevice.ParserSettings.IsBarcodeParser}">
+                      <CheckBox Content="去除首尾空白" IsChecked="{Binding SelectedDevice.ParserSettings.TrimWhitespace}" />
+                    </StackPanel>
+                  </StackPanel>
+                </Border>
+              </StackPanel>
+            </ScrollViewer>
+          </TabItem>
+
+          <TabItem Header="转发设置">
+            <ScrollViewer>
+              <StackPanel Margin="8" Spacing="16">
+                <Border BorderBrush="#E5E7EB" BorderThickness="1" CornerRadius="6" Padding="12" Background="#F8FAFC">
+                  <StackPanel Spacing="8">
+                    <TextBlock Text="TCP 转发" FontWeight="SemiBold" />
+                    <CheckBox Content="启用" IsChecked="{Binding SelectedDevice.ForwarderSettings.TcpEnabled}" />
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                      <TextBlock Text="模式" Width="90" VerticalAlignment="Center" />
+                      <ComboBox Width="160"
+                                ItemsSource="{Binding SelectedDevice.ForwarderSettings.TcpModeOptions}"
+                                SelectedItem="{Binding SelectedDevice.ForwarderSettings.SelectedTcpModeOption, Mode=TwoWay}">
+                        <ComboBox.ItemTemplate>
+                          <DataTemplate x:DataType="appModels:OptionItem">
+                            <TextBlock Text="{Binding DisplayName}" />
+                          </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                      </ComboBox>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                      <TextBlock Text="主机" Width="90" VerticalAlignment="Center" />
+                      <TextBox Width="200" Text="{Binding SelectedDevice.ForwarderSettings.TcpHost}" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                      <TextBlock Text="端口" Width="90" VerticalAlignment="Center" />
+                      <TextBox Width="160" Text="{Binding SelectedDevice.ForwarderSettings.TcpPort}" />
+                    </StackPanel>
+                  </StackPanel>
+                </Border>
+
+                <Border BorderBrush="#E5E7EB" BorderThickness="1" CornerRadius="6" Padding="12" Background="#F8FAFC">
+                  <StackPanel Spacing="8">
+                    <TextBlock Text="MQTT 转发" FontWeight="SemiBold" />
+                    <CheckBox Content="启用" IsChecked="{Binding SelectedDevice.ForwarderSettings.MqttEnabled}" />
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                      <TextBlock Text="服务器" Width="90" VerticalAlignment="Center" />
+                      <TextBox Width="200" Text="{Binding SelectedDevice.ForwarderSettings.MqttBroker}" />
+                      <TextBlock Text="端口" VerticalAlignment="Center" />
+                      <TextBox Width="80" Text="{Binding SelectedDevice.ForwarderSettings.MqttPort}" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                      <TextBlock Text="主题" Width="90" VerticalAlignment="Center" />
+                      <TextBox Width="300" Text="{Binding SelectedDevice.ForwarderSettings.MqttTopic}" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                      <TextBlock Text="用户名" Width="90" VerticalAlignment="Center" />
+                      <TextBox Width="200" Text="{Binding SelectedDevice.ForwarderSettings.MqttUsername}" />
+                      <TextBlock Text="密码" VerticalAlignment="Center" />
+                      <TextBox Width="200" Text="{Binding SelectedDevice.ForwarderSettings.MqttPassword}" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                      <CheckBox Content="启用 TLS" IsChecked="{Binding SelectedDevice.ForwarderSettings.MqttUseTls}" />
+                      <TextBlock Text="QoS" VerticalAlignment="Center" />
+                      <ComboBox Width="80"
+                                ItemsSource="{Binding SelectedDevice.ForwarderSettings.QosOptions}"
+                                SelectedItem="{Binding SelectedDevice.ForwarderSettings.MqttQos}" />
+                      <CheckBox Content="保留" IsChecked="{Binding SelectedDevice.ForwarderSettings.MqttRetain}" />
+                    </StackPanel>
+                  </StackPanel>
+                </Border>
+
+                <Border BorderBrush="#E5E7EB" BorderThickness="1" CornerRadius="6" Padding="12" Background="#F8FAFC">
+                  <StackPanel Spacing="8">
+                    <TextBlock Text="剪贴板" FontWeight="SemiBold" />
+                    <CheckBox Content="启用" IsChecked="{Binding SelectedDevice.ForwarderSettings.ClipboardEnabled}" />
+                    <CheckBox Content="追加换行" IsChecked="{Binding SelectedDevice.ForwarderSettings.ClipboardAppendNewLine}" />
+                  </StackPanel>
+                </Border>
+
+                <Border BorderBrush="#E5E7EB" BorderThickness="1" CornerRadius="6" Padding="12" Background="#F8FAFC">
+                  <StackPanel Spacing="8">
+                    <TextBlock Text="模拟输入" FontWeight="SemiBold" />
+                    <CheckBox Content="启用" IsChecked="{Binding SelectedDevice.ForwarderSettings.TypingEnabled}" />
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                      <TextBlock Text="延迟(ms)" Width="90" VerticalAlignment="Center" />
+                      <TextBox Width="160" Text="{Binding SelectedDevice.ForwarderSettings.TypingDelayMs}" />
+                    </StackPanel>
+                  </StackPanel>
+                </Border>
+              </StackPanel>
+            </ScrollViewer>
+          </TabItem>
+
+          <TabItem Header="收发">
+            <Grid Margin="8" ColumnDefinitions="*,360" RowDefinitions="Auto,*">
+              <Border Grid.ColumnSpan="2"
+                      Background="{StaticResource ConsoleHeroBrush}"
+                      CornerRadius="12"
+                      Padding="16"
+                      Margin="0,0,0,16">
+                <StackPanel Spacing="4">
+                  <TextBlock Text="串口监视台" FontSize="16" FontWeight="SemiBold" Foreground="{StaticResource ConsoleInkBrush}" />
+                  <TextBlock Text="实时接收与发送数据，支持 Hex 视图与附加位设置"
+                             FontSize="12"
+                             Foreground="{StaticResource ConsoleInkSoftBrush}" />
+                </StackPanel>
+              </Border>
+
+              <Border Grid.Row="1" Grid.Column="0" Classes="console-card" Padding="14" Margin="0,0,16,0">
+                <Grid RowDefinitions="Auto,*">
+                  <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,10">
+                    <StackPanel Orientation="Horizontal" Spacing="12">
+                      <TextBlock Text="接收监视" FontWeight="SemiBold" FontSize="14" Foreground="{StaticResource ConsoleInkBrush}" />
+                      <ToggleSwitch Classes="compact" Content="16进制显示" IsChecked="{Binding SerialConsole.IsHexDisplay}" />
+                      <ToggleSwitch Classes="compact" Content="自动滚动" IsChecked="{Binding SerialConsole.IsAutoScrollEnabled}" />
+                      <Button Content="清空" Command="{Binding SerialConsole.ClearCommand}" Classes="secondary mini" />
+                    </StackPanel>
+                    <Border Grid.Column="1"
+                            Background="{StaticResource ConsoleAccentSoftBrush}"
+                            CornerRadius="999"
+                            Padding="10,4"
+                            VerticalAlignment="Center">
+                      <TextBlock Text="{Binding SerialConsole.ReceiveStatsText}"
+                                 Foreground="{StaticResource ConsoleAccentBrush}"
+                                 FontSize="12"
+                                 FontWeight="SemiBold" />
+                    </Border>
+                  </Grid>
+                  <Border Grid.Row="1" Classes="console-inset" Padding="8">
+                    <ListBox ItemsSource="{Binding SerialConsole.Entries}"
+                             Background="Transparent"
+                             BorderThickness="0"
+                             behaviors:AutoScrollBehavior.IsEnabled="{Binding SerialConsole.IsAutoScrollEnabled}">
+                      <ListBox.ItemTemplate>
+                        <DataTemplate x:DataType="vm:SerialMonitorEntry">
+                          <StackPanel Orientation="Horizontal" Spacing="10">
+                            <TextBlock Text="{Binding TimestampText}" Width="110" Foreground="{StaticResource ConsoleInkSoftBrush}" FontSize="12" />
+                            <TextBlock Text="{Binding DisplayText}"
+                                       TextWrapping="Wrap"
+                                       FontFamily="Cascadia Mono, Consolas" />
+                          </StackPanel>
+                        </DataTemplate>
+                      </ListBox.ItemTemplate>
+                    </ListBox>
+                  </Border>
+                </Grid>
+              </Border>
+
+              <Border Grid.Row="1" Grid.Column="1" Classes="console-card" Padding="14">
+                <Grid RowDefinitions="Auto,*,Auto,Auto">
+                  <StackPanel Orientation="Horizontal" Spacing="10" Margin="0,0,0,8">
+                    <TextBlock Text="发送区" FontWeight="SemiBold" FontSize="14" Foreground="{StaticResource ConsoleInkBrush}" />
+                    <Border Background="#FEE2E2"
+                            BorderBrush="#FECACA"
+                            BorderThickness="1"
+                            CornerRadius="999"
+                            Padding="10,3"
+                            IsVisible="{Binding SerialConsole.ShowConnectionHint}">
+                      <TextBlock Text="{Binding SerialConsole.ConnectionHintText}"
+                                 FontSize="12"
+                                 Foreground="{StaticResource ConsoleDangerBrush}" />
+                    </Border>
+                  </StackPanel>
+                  <TextBox Grid.Row="1"
+                           Classes="console-input"
+                           Text="{Binding SerialConsole.SendText}"
+                           AcceptsReturn="True"
+                           TextWrapping="Wrap"
+                           MinHeight="140"
+                           Margin="0,0,0,10" />
+                  <StackPanel Grid.Row="2" Spacing="10" Margin="0,0,0,10">
+                    <StackPanel Orientation="Horizontal" Spacing="10">
+                      <ToggleSwitch Classes="compact" Content="16进制发送" IsChecked="{Binding SerialConsole.IsHexSend}" />
+                      <TextBlock Text="附加位" VerticalAlignment="Center" Foreground="{StaticResource ConsoleInkSoftBrush}" />
+                      <ComboBox Width="160"
+                                ItemsSource="{Binding SerialConsole.AppendOptions}"
+                                SelectedItem="{Binding SerialConsole.SelectedAppendOption}">
+                        <ComboBox.ItemTemplate>
+                          <DataTemplate x:DataType="appModels:OptionItem">
+                            <TextBlock Text="{Binding DisplayName}" />
+                          </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                      </ComboBox>
+                    </StackPanel>
+                    <Grid ColumnDefinitions="Auto,*" Margin="10">
+                      <TextBlock Text="自定义附加" VerticalAlignment="Center" Foreground="{StaticResource ConsoleInkSoftBrush}" />
+                      <TextBox Grid.Column="1"
+                               Classes="console-input"
+                               Text="{Binding SerialConsole.CustomAppendText}"
+                               IsEnabled="{Binding SerialConsole.IsCustomAppend}"
+                               Watermark="输入自定义附加内容" />
+                    </Grid>
+                    <Button Content="发送" Command="{Binding SerialConsole.SendCommand}" Classes="primary" HorizontalAlignment="Right" />
+                  </StackPanel>
+                  <Border Grid.Row="3"
+                          Background="#FEE2E2"
+                          BorderBrush="#FECACA"
+                          BorderThickness="1"
+                          CornerRadius="8"
+                          Padding="8"
+                          IsVisible="{Binding SerialConsole.HasSendError}">
+                    <TextBlock Text="{Binding SerialConsole.SendErrorText}"
+                               Foreground="{StaticResource ConsoleDangerBrush}"
+                               TextWrapping="Wrap" />
+                  </Border>
+                </Grid>
+              </Border>
+            </Grid>
+          </TabItem>
+
+          <TabItem Header="日志">
+            <Grid RowDefinitions="Auto,*" Margin="8">
+              <StackPanel Orientation="Horizontal" Spacing="8">
+                <TextBlock Text="日志目录:" VerticalAlignment="Center" />
+                <TextBlock Text="{Binding LogViewModel.LogDirectory}" VerticalAlignment="Center" />
+                <Button Content="复制路径" Command="{Binding LogViewModel.CopyPathCommand}" Classes="secondary" />
+              </StackPanel>
+              <Border Grid.Row="1" BorderBrush="#E5E7EB" BorderThickness="1" CornerRadius="6" Margin="0,12,0,0">
+                <ListBox ItemsSource="{Binding LogViewModel.Entries}">
+                  <ListBox.ItemTemplate>
+                    <DataTemplate x:DataType="models:LogEntry">
+                      <StackPanel Orientation="Horizontal" Spacing="12">
+                        <TextBlock Text="{Binding Timestamp}" Width="160" />
+                        <TextBlock Text="{Binding Level}" Width="90" />
+                        <TextBlock Text="{Binding Message}" TextWrapping="Wrap" />
+                      </StackPanel>
+                    </DataTemplate>
+                  </ListBox.ItemTemplate>
+                </ListBox>
+              </Border>
+            </Grid>
+          </TabItem>
+        </TabControl>
+      </Border>
+    </Grid>
+
+    <Border Grid.Row="2" Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="0,1,0,0" Padding="10,8">
+      <StackPanel Orientation="Horizontal" Spacing="16">
+        <TextBlock Text="状态:" VerticalAlignment="Center" />
+        <TextBlock Text="{Binding StatusBar.ConnectionStateText}" VerticalAlignment="Center" />
+        <TextBlock Text="解析器:" VerticalAlignment="Center" />
+        <TextBlock Text="{Binding StatusBar.ParserName}" VerticalAlignment="Center" />
+        <TextBlock Text="转发器:" VerticalAlignment="Center" />
+        <TextBlock Text="{Binding StatusBar.ForwardersText}" VerticalAlignment="Center" />
+        <TextBlock Text="吞吐量:" VerticalAlignment="Center" />
+        <TextBlock Text="{Binding StatusBar.ThroughputText}" VerticalAlignment="Center" />
+        <TextBlock Text="错误:" VerticalAlignment="Center" IsVisible="{Binding StatusBar.HasLastError}" />
+        <TextBlock Text="{Binding StatusBar.LastErrorText}" Foreground="#DC2626" VerticalAlignment="Center" TextWrapping="Wrap" IsVisible="{Binding StatusBar.HasLastError}" />
+      </StackPanel>
+    </Border>
+  </Grid>
+</Window>
